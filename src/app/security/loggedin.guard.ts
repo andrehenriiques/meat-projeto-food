@@ -1,5 +1,5 @@
 import { LoginService } from './login/login.service';
-import { CanLoad, Route } from "@angular/router";
+import { CanLoad, Route, ActivatedRoute, RouterStateSnapshot, CanActivate } from "@angular/router";
 
 import { Injectable } from "@angular/core";
 
@@ -10,12 +10,22 @@ export class LoggedInGuard implements CanLoad {
         private loginService: LoginService
     ) { }
 
-    canLoad(route: Route): boolean {
+    checkAuthentication(path: string): boolean {
         const loggedIn = this.loginService.isLoggedIn()
         if (!loggedIn) {
-            this.loginService.handleLogin(`/${route.path}`)
+            this.loginService.handleLogin(`/${path}`)
         }
         return loggedIn
+    }
+
+    canLoad(route: Route): boolean {
+        console.log('canLoad')
+        return this.checkAuthentication(route.path)
+    }
+
+    canActivate(activatedRoute: ActivatedRoute, routerState: RouterStateSnapshot): boolean {
+        console.log('canActivate')
+        return this.checkAuthentication(activatedRoute.routeConfig.path)
     }
 
 }
