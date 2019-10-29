@@ -1,3 +1,6 @@
+import { LoggedInGuard } from './../security/loggedin.guard';
+import { LoginService } from './../security/login/login.service';
+import { User } from './../security/login/user.model';
 import { NotificationService } from './messages/notification.service';
 import { OrderService } from './../order/order.service';
 import { RestaurantService } from './../restaurants/restaurants.service';
@@ -14,18 +17,18 @@ import { FormsModule, ReactiveFormsModule } from '@angular/forms';
 import { SnackbarComponent } from './messages/snackbar/snackbar.component';
 
 @NgModule({
-    declarations:[
+    declarations: [
         InputComponent,
         RadioComponent,
         RatingComponent,
         SnackbarComponent
     ],
-    imports:[
+    imports: [
         FormsModule,
         ReactiveFormsModule,
         CommonModule
     ],
-    exports:[
+    exports: [
         InputComponent,
         RadioComponent,
         RatingComponent,
@@ -35,15 +38,17 @@ import { SnackbarComponent } from './messages/snackbar/snackbar.component';
         SnackbarComponent
     ]
 })
-export class SharedModule{
-    static forRoot(): ModuleWithProviders{
-        return{
+export class SharedModule {
+    static forRoot(): ModuleWithProviders {
+        return {
             ngModule: SharedModule,
             providers: [
                 ShoppingCartService,
                 RestaurantService,
                 OrderService,
-                NotificationService
+                NotificationService,
+                LoginService,
+                LoggedInGuard
             ]
         }
     }

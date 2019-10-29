@@ -1,11 +1,15 @@
+import { Router } from '@angular/router';
+import { LoginService } from './../security/login/login.service';
 import { MEAT_API } from './../app.api';
-import { HttpClient } from '@angular/common/http';
+import { HttpClient, HttpHeaders } from '@angular/common/http';
 import { CartItem } from './../restaurant-detail/shopping-cart/cart-item.model';
 import { ShoppingCartService } from './../restaurant-detail/shopping-cart/shopping-cart.service';
 import { Injectable } from "@angular/core";
 import { Observable } from 'rxjs/Observable';
 import 'rxjs/add/operator/map'
+
 import { Order, OrderItem } from './order.model';
+
 
 
 @Injectable()
@@ -13,7 +17,9 @@ export class OrderService {
 
     constructor(
         private cartService: ShoppingCartService,
-        private http: HttpClient
+        private http: HttpClient,
+        private loginService: LoginService,
+        private router: Router
     ) { }
 
     cartItems(): CartItem[] {
@@ -36,13 +42,21 @@ export class OrderService {
         return this.cartService.total()
     }
 
-    clear(){
+    clear() {
         this.cartService.clear();
     }
 
     checkOrder(order: Order): Observable<string> {
-        return this.http.post<Order>(`${MEAT_API}/orders`,  order)
-                    .map(order=>order.id)   
+        let headers = new HttpHeaders()
+        if (this.loginService.isLoggedIn()) {
+            headers = headers.set('Authorization', `Bearer ${this.loginService.user.accessToken}`)
+        }
+        return this.http.post<Order>(`${MEAT_API}/orders`, order, { headers: headers })
+            .map(order => order.id)
+    }
+
+    handleLogin() {
+        this.router.navigate(['/login'])
     }
 
 
